@@ -80,7 +80,9 @@ The child runbooks are:
 | Exchange steps | `Az.Accounts`, `ExchangeOnlineManagement` |
 | SharePoint step | `Az.Accounts`, `PnP.PowerShell` |
 
-> `Step-05_Remove-SharePoint-Access` should run in a **PowerShell 7.4 custom runtime** so `PnP.PowerShell` loads reliably.
+> Important: this solution is tested with classic Azure Automation `PowerShell` runbooks for all 10 scripts. If you choose `PowerShell 7.x` or a custom runtime, you must explicitly provision that runtime and install the required modules there.
+
+> Also ensure the `SubscriptionId` Automation Variable is set to the subscription containing the Automation Account.
 
 ### Required access and roles
 

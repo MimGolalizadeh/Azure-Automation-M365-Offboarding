@@ -89,6 +89,7 @@ These roles are recommended for the supported public workflow.
 |---|---|---|
 | Automation Account or hosting Resource Group | `Contributor` or `Automation Contributor` | Lets `Start-Offboarding-Main` start child runbooks and read job state/output |
 | Subscription / RG for read access | `Reader` as needed | Helpful for consistent Az context and diagnostics |
+| Automation Account managed identity | `Automation Contributor` or `Contributor` on the Automation Account RG | Required so the managed identity can resolve subscription context and start runbooks with `Connect-AzAccount -Identity` |
 
 > The key operational requirement is that the managed identity can successfully run `Start-AzAutomationRunbook`, `Get-AzAutomationJob`, and related Az.Automation calls inside the same Automation Account.
 
@@ -101,15 +102,17 @@ These roles are recommended for the supported public workflow.
 | `Start-Offboarding-Main` | `PowerShell` | `Az.Accounts`, `Az.Automation` | Starts and monitors child runbooks |
 | `Step-01`, `Step-03`, `Step-07`, `Step-08`, `Step-09` | `PowerShell` | `Az.Accounts` | Use Graph REST via `Get-AzAccessToken` |
 | `Step-02`, `Step-04`, `Step-06` | `PowerShell` | `Az.Accounts`, `ExchangeOnlineManagement` | Use Exchange Online app-only / managed identity patterns |
-| `Step-05_Remove-SharePoint-Access` | `PowerShell` + runtime environment `PowerShell-74-Custom` | `PnP.PowerShell`, `Az.Accounts` | **Must** be linked to the custom runtime so `PnP.PowerShell` loads correctly |
+| `Step-05_Remove-SharePoint-Access` | `PowerShell` | `PnP.PowerShell`, `Az.Accounts` | Works as a classic PowerShell runbook when `PnP.PowerShell` is imported into the Automation account; optionally use a dedicated custom runtime for better isolation |
 
 ### Important runtime note for Step 05
-`Step-05_Remove-SharePoint-Access` must be linked to:
+`Step-05_Remove-SharePoint-Access` can be linked to a custom runtime if needed, but the default tested deployment uses classic Azure Automation `PowerShell` runbooks for all steps.
+
+If you do choose a dedicated runtime for Step 05, link it to:
 
 - **Runbook type:** `PowerShell`
 - **Runtime environment:** `PowerShell-74-Custom`
 
-This is required because `PnP.PowerShell` is most reliable in a dedicated PowerShell 7.4 runtime for Azure Automation scenarios.
+This is helpful because `PnP.PowerShell` is most reliable in a dedicated PowerShell 7.4 runtime for Azure Automation scenarios.
 
 ---
 
